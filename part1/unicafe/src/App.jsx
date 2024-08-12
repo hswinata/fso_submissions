@@ -11,13 +11,16 @@ const Statistics = ({ good, neutral, bad }) => {
       {all === 0 ? (
         <p>No feedback given</p>
       ) : (
-        <ul>
-          <StatisticsLine name="good" value={good} />
-          <StatisticsLine name="neutral" value={neutral} />
-          <StatisticsLine name="bad" value={bad} />
-          <StatisticsLine name="average" value={average} />
-          <StatisticsLine name="positive" value={positive} />
-        </ul>
+        <table>
+          <tbody>
+            <StatisticsLine name="good" value={good} />
+            <StatisticsLine name="neutral" value={neutral} />
+            <StatisticsLine name="bad" value={bad} />
+            <StatisticsLine name="all" value={all} />
+            <StatisticsLine name="average" value={average} />
+            <StatisticsLine name="positive" value={positive} />
+          </tbody>
+        </table>
       )}
     </div>
   );
@@ -25,9 +28,10 @@ const Statistics = ({ good, neutral, bad }) => {
 
 const StatisticsLine = ({ name, value }) => {
   return (
-    <li>
-      {name} {value}
-    </li>
+    <tr>
+      <td>{name}</td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
