@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import personsService from "./services/persons";
 import Filter from "./components/Filter";
 import AddForm from "./components/AddForm";
 import Persons from "./components/Persons";
@@ -11,7 +11,7 @@ const App = () => {
   const [newFilter, setNewFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    personsService.getAll().then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -28,23 +28,22 @@ const App = () => {
       return;
     }
 
-    //Update persons state.
+    //Add person to DB.
     const newPersonObject = {
       name: newName,
       number: newNumber,
       id: persons.length + 1,
     };
-    const personsCopy = [...persons, newPersonObject];
-    setPersons(personsCopy);
 
-    //Add person to DB.
-    axios
-      .post("http://localhost:3001/persons", newPersonObject)
-      .then((response) => console.log(response));
+    personsService.create(newPersonObject).then((response) => {
+      //Update persons state.
+      const personsCopy = [...persons, response.data];
+      setPersons(personsCopy);
 
-    //Reset states.
-    setNewName("");
-    setNewNumber("");
+      //Reset states.
+      setNewName("");
+      setNewNumber("");
+    });
   };
 
   const handleNameChange = (event) => {
