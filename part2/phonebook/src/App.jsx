@@ -6,7 +6,6 @@ import Persons from "./components/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
@@ -20,15 +19,16 @@ const App = () => {
   const handleAddPerson = (event) => {
     event.preventDefault();
 
+    //Check if added name is already in DB.
     const nameExists = persons.some(
       (person) => newName.toLowerCase() === person.name.toLowerCase()
     );
-
     if (nameExists) {
       alert(`${newName} is already added to phonebook`);
       return;
     }
 
+    //Update persons state.
     const newPersonObject = {
       name: newName,
       number: newNumber,
@@ -36,6 +36,13 @@ const App = () => {
     };
     const personsCopy = [...persons, newPersonObject];
     setPersons(personsCopy);
+
+    //Add person to DB.
+    axios
+      .post("http://localhost:3001/persons", newPersonObject)
+      .then((response) => console.log(response));
+
+    //Reset states.
     setNewName("");
     setNewNumber("");
   };
