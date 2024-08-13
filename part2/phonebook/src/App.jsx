@@ -6,6 +6,16 @@ const App = () => {
 
   const handleAddPerson = (event) => {
     event.preventDefault();
+
+    const nameExists = persons.some(
+      (person) => newName.toLowerCase() === person.name.toLowerCase()
+    );
+
+    if (nameExists) {
+      alert(`${newName} is already added to phonebook`);
+      return;
+    }
+
     const newPersonObject = { name: newName };
     const personsCopy = [...persons, newPersonObject];
     setPersons(personsCopy);
