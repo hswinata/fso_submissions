@@ -6,7 +6,11 @@ const getAll = () => {
 };
 
 const create = (newPersonObject) => {
-  return axios.post("http://localhost:3001/persons", newPersonObject);
+  return axios.post(baseUrl, newPersonObject);
 };
 
-export default { getAll, create };
+const deletePerson = (personId) => {
+  return axios.delete(`${baseUrl}/${personId}`);
+};
+
+export default { getAll, create, deletePerson };

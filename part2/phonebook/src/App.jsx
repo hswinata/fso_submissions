@@ -32,7 +32,7 @@ const App = () => {
     const newPersonObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
+      id: (Number(persons[persons.length - 1]["id"]) + 1).toString(),
     };
 
     personsService.create(newPersonObject).then((response) => {
@@ -44,6 +44,19 @@ const App = () => {
       setNewName("");
       setNewNumber("");
     });
+  };
+
+  const handleDeletePerson = (personObject) => {
+    //Delete persons from DB.
+    const confirmDelete = window.confirm(`Delete ${personObject.name} ?`);
+    confirmDelete &&
+      personsService.deletePerson(personObject.id).then(() => {
+        //Update persons state.
+        const personsCopy = persons.filter(
+          (person) => person.id !== personObject.id
+        );
+        setPersons(personsCopy);
+      });
   };
 
   const handleNameChange = (event) => {
@@ -77,7 +90,10 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons
+        filteredPersons={filteredPersons}
+        handleDeletePerson={handleDeletePerson}
+      />
     </div>
   );
 };
