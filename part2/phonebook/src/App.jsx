@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Filter from "./components/Filter";
+import AddForm from "./components/AddForm";
+import Persons from "./components/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -24,7 +27,11 @@ const App = () => {
       return;
     }
 
-    const newPersonObject = { name: newName, number: newNumber };
+    const newPersonObject = {
+      name: newName,
+      number: newNumber,
+      id: persons.length + 1,
+    };
     const personsCopy = [...persons, newPersonObject];
     setPersons(personsCopy);
     setNewName("");
@@ -50,28 +57,19 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      filter shown with{" "}
-      <input onChange={handleFilterChange} value={newFilter} />
+      <Filter handleFilterChange={handleFilterChange} newFilter={newFilter} />
+
       <h2>add a new</h2>
-      <form onSubmit={handleAddPerson}>
-        <div>
-          name: <input onChange={handleNameChange} value={newName} />
-        </div>
-        <div>
-          number: <input onChange={handleNumberChange} value={newNumber} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <AddForm
+        handleAddPerson={handleAddPerson}
+        handleNameChange={handleNameChange}
+        newName={newName}
+        handleNumberChange={handleNumberChange}
+        newNumber={newNumber}
+      />
+
       <h2>Numbers</h2>
-      <ul>
-        {filteredPersons.map((person) => (
-          <li key={person.name}>
-            {person.name} {person.number}
-          </li>
-        ))}
-      </ul>
+      <Persons filteredPersons={filteredPersons} />
     </div>
   );
 };
