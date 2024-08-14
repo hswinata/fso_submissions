@@ -3,12 +3,14 @@ import personsService from "./services/persons";
 import Filter from "./components/Filter";
 import AddForm from "./components/AddForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personsService.getAll().then((response) => {
@@ -39,6 +41,18 @@ const App = () => {
               person.id === response.data.id ? response.data : person
             );
             setPersons(personsCopy);
+
+            //Reset states
+            setNewName("");
+            setNewNumber("");
+
+            //Notification.
+            setNotification(
+              `Updated ${response.data.name} with ${response.data.number}`
+            );
+            setTimeout(() => {
+              setNotification(null);
+            }, 4000);
           });
       }
       return;
@@ -65,6 +79,12 @@ const App = () => {
       //Reset states.
       setNewName("");
       setNewNumber("");
+
+      //Notification.
+      setNotification(`Added ${response.data.name}`);
+      setTimeout(() => {
+        setNotification(null);
+      }, 4000);
     });
   };
 
@@ -100,6 +120,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter handleFilterChange={handleFilterChange} newFilter={newFilter} />
 
       <h2>add a new</h2>
