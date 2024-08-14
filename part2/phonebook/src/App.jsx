@@ -23,16 +23,38 @@ const App = () => {
     const nameExists = persons.some(
       (person) => newName.toLowerCase() === person.name.toLowerCase()
     );
+
     if (nameExists) {
-      alert(`${newName} is already added to phonebook`);
+      const confirmUpdateNumber = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one ?`
+      );
+      if (confirmUpdateNumber) {
+        const personObject = persons.find((person) => person.name === newName);
+
+        personsService
+          .updateNumber(personObject.id, { ...personObject, number: newNumber })
+          .then((response) => {
+            //Update persons state.
+            const personsCopy = persons.map((person) =>
+              person.id === response.data.id ? response.data : person
+            );
+            setPersons(personsCopy);
+          });
+      }
       return;
     }
 
     //Add person to DB.
+    const idGenerator = () => {
+      return persons.length === 0
+        ? "1"
+        : (Number(persons[persons.length - 1]["id"]) + 1).toString();
+    };
+
     const newPersonObject = {
       name: newName,
       number: newNumber,
-      id: (Number(persons[persons.length - 1]["id"]) + 1).toString(),
+      id: idGenerator(),
     };
 
     personsService.create(newPersonObject).then((response) => {
