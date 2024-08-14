@@ -10,7 +10,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
-  const [notification, setNotification] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationType, setNotificationType] = useState("");
 
   useEffect(() => {
     personsService.getAll().then((response) => {
@@ -47,11 +48,23 @@ const App = () => {
             setNewNumber("");
 
             //Notification.
-            setNotification(
+            setNotificationType("notification");
+            setNotificationMessage(
               `Updated ${response.data.name} with ${response.data.number}`
             );
             setTimeout(() => {
-              setNotification(null);
+              setNotificationMessage(null);
+            }, 4000);
+          })
+          .catch((error) => {
+            console.error(error.message);
+
+            setNotificationType("error");
+            setNotificationMessage(
+              `${personObject.name} has already been deleted from server.`
+            );
+            setTimeout(() => {
+              setNotificationMessage(null);
             }, 4000);
           });
       }
@@ -81,9 +94,10 @@ const App = () => {
       setNewNumber("");
 
       //Notification.
-      setNotification(`Added ${response.data.name}`);
+      setNotificationType("notification");
+      setNotificationMessage(`Added ${response.data.name}`);
       setTimeout(() => {
-        setNotification(null);
+        setNotificationMessage(null);
       }, 4000);
     });
   };
@@ -120,7 +134,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification notification={notification} />
+      <Notification
+        notificationMessage={notificationMessage}
+        notificationType={notificationType}
+      />
       <Filter handleFilterChange={handleFilterChange} newFilter={newFilter} />
 
       <h2>add a new</h2>
