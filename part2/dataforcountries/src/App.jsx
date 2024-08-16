@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import CountryList from "./components/CountryList";
+import CountryDetail from "./components/CountryDetail";
 import SearchForm from "./components/SearchForm";
 
 const App = () => {
   const [search, setSearch] = useState("");
   const [countries, setCountries] = useState([]);
   const [visibility, setVisibility] = useState({});
+  const [temperature, setTemperature] = useState("");
+  const [wind, setWind] = useState("");
 
   // Filtered countries.
   const filteredCountries = countries.filter((country) =>
@@ -25,36 +28,67 @@ const App = () => {
       });
   }, []);
 
+  //Fetch city weather.
+  const fetchWeather = (lat, lang) => {
+    axios
+      .get(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lang}&current=temperature_2m,wind_speed_10m&wind_speed_unit=ms`
+      )
+      .then((response) => {
+        setTemperature(response.data.current.temperature_2m + "Celsius");
+        setWind(response.data.current.wind_speed_10m + "m/s");
+      })
+      .catch((error) => console.error(error.message));
+  };
+
   const handleCountryChange = (event) => {
     setSearch(event.target.value);
   };
 
-  const handleShowClick = (cca3) => {
+  const handleShowClick = (country) => {
     setVisibility((prevVisibility) => ({
       ...prevVisibility,
-      [cca3]: !prevVisibility[cca3],
+      [country.cca3]: !prevVisibility[country.cca3],
     }));
+
+    fetchWeather(country.capitalInfo.latlng[0], country.capitalInfo.latlng[1]);
   };
 
   return (
     <div>
       <SearchForm search={search} handleCountryChange={handleCountryChange} />
 
-      <ul>
-        {search === "" ? (
-          <p>Search country</p>
-        ) : filteredCountries.length > 10 ? (
-          <p>Too many matches, specify another filter</p>
-        ) : (
-          <>
-            <CountryList
-              filteredCountries={filteredCountries}
-              handleShowClick={handleShowClick}
-              visibility={visibility}
-            />
-          </>
-        )}
-      </ul>
+      {filteredCountries.length === 1 ? (
+        <>
+          {fetchWeather(
+            filteredCountries[0].capitalInfo.latlng[0],
+            filteredCountries[0].capitalInfo.latlng[1]
+          )}
+          <CountryDetail
+            country={filteredCountries[0]}
+            temperature={temperature}
+            wind={wind}
+          />
+        </>
+      ) : (
+        <ul>
+          {search === "" ? (
+            <p>Search country</p>
+          ) : filteredCountries.length > 10 ? (
+            <p>Too many matches, specify another filter</p>
+          ) : (
+            <>
+              <CountryList
+                filteredCountries={filteredCountries}
+                handleShowClick={handleShowClick}
+                visibility={visibility}
+                temperature={temperature}
+                wind={wind}
+              />
+            </>
+          )}
+        </ul>
+      )}
     </div>
   );
 };

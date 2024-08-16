@@ -1,4 +1,4 @@
-const CountryDetail = ({ country }) => {
+const CountryDetail = ({ country, temperature, wind }) => {
   //Show loading if the state hasn't been populated yet.
   if (!country) {
     return <div>Loading...</div>;
@@ -21,8 +21,8 @@ const CountryDetail = ({ country }) => {
       </ul>
       <img alt={country.flags.alt} src={country.flags.png}></img>
       <h3>Weather in {country.capital}</h3>
-      <p>temperature </p>
-      <p>wind </p>
+      <p>temperature {temperature}</p>
+      <p>wind {wind}</p>
     </div>
   );
 };
