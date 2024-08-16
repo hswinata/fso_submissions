@@ -28,7 +28,7 @@ const App = () => {
       });
   }, []);
 
-  //Fetch city weather.
+  //Fetch city weather and wind.
   const fetchWeather = (lat, lang) => {
     axios
       .get(
