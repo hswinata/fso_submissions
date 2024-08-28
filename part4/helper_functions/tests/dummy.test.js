@@ -8,7 +8,7 @@ test("dummmy returns one", () => {
   assert.strictEqual(result, 1);
 });
 
-describe("total likes", () => {
+describe("when there is only one blog", () => {
   const listWithOneBlog = [
     {
       _id: "5a422aa71b54a676234d17f8",
@@ -26,7 +26,7 @@ describe("total likes", () => {
   });
 });
 
-describe("multiple blogs", () => {
+describe("when there are multiple blogs", () => {
   const blogs = [
     {
       _id: "5a422a851b54a676234d17f7",
@@ -88,6 +88,14 @@ describe("multiple blogs", () => {
     assert.deepStrictEqual(authorWithMostBlogs, {
       author: "Robert C. Martin",
       blogs: 3,
+    });
+  });
+
+  test("return author with most likes", () => {
+    const authorWithMostLikes = listHelper.mostLikes(blogs);
+    assert.deepStrictEqual(authorWithMostLikes, {
+      author: "Edsger W. Dijkstra",
+      likes: 17,
     });
   });
 });
