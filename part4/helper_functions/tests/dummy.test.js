@@ -26,7 +26,7 @@ describe("total likes", () => {
   });
 });
 
-describe("favorite blogs", () => {
+describe("multiple blogs", () => {
   const blogs = [
     {
       _id: "5a422a851b54a676234d17f7",
@@ -81,5 +81,13 @@ describe("favorite blogs", () => {
   test("return favorite blogs by most likes", () => {
     const favoriteBlog = listHelper.favoriteBlog(blogs);
     assert.deepStrictEqual(favoriteBlog, blogs[2]);
+  });
+
+  test("return author with most blogs", () => {
+    const authorWithMostBlogs = listHelper.mostBlogs(blogs);
+    assert.deepStrictEqual(authorWithMostBlogs, {
+      author: "Robert C. Martin",
+      blogs: 3,
+    });
   });
 });
