@@ -90,8 +90,21 @@ test('creates a new blog post', async () => {
 
   await api.post('/api/blogs').send(newBlog).expect(201)
 
-  const response = await api.get('/api/blogs')
-  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+  const blogsAfterPost = await api.get('/api/blogs')
+  assert.strictEqual(blogsAfterPost.body.length, initialBlogs.length + 1)
+})
+
+test(' `likes` defaults to 0 if missing from the request', async () => {
+  const newBlog = {
+    title: 'Test Blog',
+    author: 'Tony Test',
+    url: 'https://tonytest.com/'
+  }
+
+  const response = await api.post('/api/blogs').send(newBlog)
+  const addedBlog = await api.get(`/api/blogs/${response.body.id}`)
+
+  assert.deepStrictEqual(addedBlog.body.likes, 0)
 })
 
 after(async () => {
