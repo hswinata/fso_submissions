@@ -107,6 +107,26 @@ test(' `likes` defaults to 0 if missing from the request', async () => {
   assert.deepStrictEqual(addedBlog.body.likes, 0)
 })
 
+test(`server responds with 400 Bad Request if 'title' is missing from request`, async () => {
+  const newBlog = {
+    author: 'Tony Test',
+    url: 'https://tonytest.com/',
+    likes: 666
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+})
+
+test(`server responds with 400 Bad Request if 'url' is missing from request`, async () => {
+  const newBlog = {
+    title: 'Test Blog',
+    author: 'Tony Test',
+    likes: 666
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
