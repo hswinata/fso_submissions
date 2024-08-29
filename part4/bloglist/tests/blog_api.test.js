@@ -127,6 +127,14 @@ test(`server responds with 400 Bad Request if 'url' is missing from request`, as
   await api.post('/api/blogs').send(newBlog).expect(400)
 })
 
+test('deletes a blog', async () => {
+  const id = initialBlogs[0]._id
+  await api.delete(`/api/blogs/${id}`).expect(204)
+
+  const blogsAfterDelete = await api.get('/api/blogs')
+  assert.strictEqual(blogsAfterDelete.body.length, initialBlogs.length - 1)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
