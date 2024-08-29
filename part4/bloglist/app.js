@@ -12,7 +12,7 @@ mongoose.set('strictQuery', false)
 
 mongoose
   .connect(config.mongoUrl)
-  .then((result) => {
+  .then(() => {
     logger.info('Connected to MongoDB')
   })
   .catch((error) => {
