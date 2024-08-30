@@ -1,6 +1,5 @@
 const { test, describe, after, beforeEach } = require('node:test')
 const User = require('../models/user')
-const helper = require('./test_helper')
 
 const assert = require('node:assert')
 const mongoose = require('mongoose')
