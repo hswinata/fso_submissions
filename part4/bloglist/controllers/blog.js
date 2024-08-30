@@ -4,15 +4,15 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
 //Helper function.
-const getToken = (request) => {
-  const authorization = request.get('authorization')
+// const getToken = (request) => {
+//   const authorization = request.get('authorization')
 
-  //Removes the word 'Bearer' and returns only the token.
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
-  }
-  return null
-}
+//   //Removes the word 'Bearer' and returns only the token.
+//   if (authorization && authorization.startsWith('Bearer ')) {
+//     return authorization.replace('Bearer ', '')
+//   }
+//   return null
+// }
 
 blogRouter.get('/', async (request, response, next) => {
   try {
@@ -38,7 +38,7 @@ blogRouter.get('/:id', async (request, response, next) => {
 blogRouter.post('/', async (request, response, next) => {
   try {
     //Find user in DB based on the token's userId.
-    const userToken = jwt.verify(getToken(request), process.env.SECRET)
+    const userToken = jwt.verify(request.token, process.env.SECRET)
     const user = await User.findById(userToken.id)
 
     const blog = new Blog({ ...request.body, user: user.id })
