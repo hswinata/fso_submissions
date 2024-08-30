@@ -23,7 +23,7 @@ describe('when some blogs are saved initially', () => {
         .expect('Content-Type', /application\/json/)
     })
 
-    test('the amount of blogs returned are correct', async () => {
+    test('the amount of blogs returned is correct', async () => {
       const response = await api.get('/api/blogs')
       assert.strictEqual(response.body.length, helper.initialBlogs.length)
     })

@@ -13,8 +13,13 @@ userRouter.get('/', async (request, response, next) => {
 
 userRouter.post('/', async (request, response, next) => {
   try {
-    //Hashing password.
     const { password } = request.body
+
+    //Password validation
+    if (password.length < 3)
+      return response.status(400).json({ error: 'password too short' })
+
+    //Hashing password.
     const saltRounds = 10
     const passwordHash = await bcryptjs.hash(password, saltRounds)
 
