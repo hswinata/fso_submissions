@@ -1,5 +1,6 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+const middleware = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response, next) => {
   try {
@@ -22,62 +23,87 @@ blogRouter.get('/:id', async (request, response, next) => {
   }
 })
 
-blogRouter.post('/', async (request, response, next) => {
-  try {
-    //Find logged in user.
-    const user = request.user
+blogRouter.post(
+  '/',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      //Find logged in user.
+      const user = request.user
 
-    const blog = new Blog({ ...request.body, user: user.id })
-    const newBlog = await blog.save()
+      const blog = new Blog({ ...request.body, user: user.id })
+      const newBlog = await blog.save()
 
-    //Add blog to user collection.
-    user.blogs = user.blogs.concat(newBlog._id)
-    await user.save()
+      //Add blog to user collection.
+      user.blogs = user.blogs.concat(newBlog._id)
+      await user.save()
 
-    response.status(201).json(newBlog)
-  } catch (error) {
-    next(error)
-  }
-})
-
-blogRouter.delete('/:id', async (request, response, next) => {
-  try {
-    //Find logged in user.
-    const user = request.user
-
-    const blog = await Blog.findById(request.params.id).populate('user', {
-      name: 1,
-      username: 1,
-      id: 1
-    })
-
-    //Return error if wrong logged in user tries to delete.
-    if (blog.user[0].id !== user.id) {
-      const error = new Error()
-      error.name = 'ForbiddenUser'
-      throw error
+      response.status(201).json(newBlog)
+    } catch (error) {
+      next(error)
     }
-
-    const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
-    response.status(204).json(deletedBlog)
-  } catch (error) {
-    next(error)
   }
-})
+)
 
-blogRouter.put('/:id', async (request, response, next) => {
-  try {
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id,
-      request.body,
-      {
-        new: true
+blogRouter.delete(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      //Find logged in user.
+      const user = request.user
+
+      const blog = await Blog.findById(request.params.id).populate('user', {
+        name: 1,
+        username: 1,
+        id: 1
+      })
+
+      //Return error if wrong logged in user tries to delete.
+      if (blog.user[0].id !== user.id) {
+        const error = new Error()
+        error.name = 'ForbiddenUser'
+        throw error
       }
-    )
-    response.status(200).json(updatedBlog)
-  } catch (error) {
-    next(error)
+
+      const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
+      response.status(204).json(deletedBlog)
+    } catch (error) {
+      next(error)
+    }
   }
-})
+)
+
+blogRouter.put(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      const user = request.user
+      const updatedBlog = await Blog.findByIdAndUpdate(
+        request.params.id,
+        request.body,
+        {
+          new: true
+        }
+      ).populate('user', {
+        name: 1,
+        username: 1,
+        id: 1
+      })
+
+      //Return error if wrong logged in user tries to put request.
+      if (updatedBlog.user[0].id !== user.id) {
+        const error = new Error()
+        error.name = 'ForbiddenUser'
+        throw error
+      }
+
+      response.status(200).json(updatedBlog)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 module.exports = blogRouter

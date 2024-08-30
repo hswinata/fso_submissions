@@ -1,12 +1,13 @@
 const { test, describe, after, beforeEach } = require('node:test')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
-
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-
+const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const api = supertest(app)
 
 describe('when some blogs are saved initially', () => {
@@ -37,94 +38,169 @@ describe('when some blogs are saved initially', () => {
     })
   })
 
-  describe('creation of blogs', () => {
-    test('creates one blog', async () => {
-      const newBlog = {
-        title: 'Test Blog',
-        author: 'Tony Test',
-        url: 'https://tonytest.com/',
-        likes: 666
-      }
+  describe('when an authorized user exists', () => {
+    let token
+    beforeEach(async () => {
+      await User.deleteMany({})
+      //Create a user.
+      const passwordHash = await bcryptjs.hash('root', 10)
+      const rootUser = new User({
+        username: 'root',
+        passwordHash,
+        name: 'root'
+      })
+      await rootUser.save()
 
-      await api.post('/api/blogs').send(newBlog).expect(201)
-
-      const response = await api.get('/api/blogs')
-      const blogsAfterPost = response.body
-      assert.strictEqual(blogsAfterPost.length, helper.initialBlogs.length + 1)
+      //JWT token.
+      const username = rootUser.username
+      const user = await User.findOne({ username })
+      const userToken = { username: user.username, id: user._id }
+      token = jwt.sign(userToken, process.env.SECRET)
     })
 
-    test(' `likes` defaults to 0 if missing from the request', async () => {
-      const newBlog = {
-        title: 'Test Blog',
-        author: 'Tony Test',
-        url: 'https://tonytest.com/'
-      }
+    describe('creation of blogs', () => {
+      test('creates one blog', async () => {
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'Tony Test',
+          url: 'https://tonytest.com/',
+          likes: 666
+        }
 
-      const response = await api.post('/api/blogs').send(newBlog)
-      const addedBlog = await api.get(`/api/blogs/${response.body.id}`)
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(201)
 
-      assert.deepStrictEqual(addedBlog.body.likes, 0)
+        const response = await api.get('/api/blogs')
+        const blogsAfterPost = response.body
+        assert.strictEqual(
+          blogsAfterPost.length,
+          helper.initialBlogs.length + 1
+        )
+      })
+
+      test(' `likes` defaults to 0 if missing from the request', async () => {
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'Tony Test',
+          url: 'https://tonytest.com/'
+        }
+
+        const response = await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
+
+        const addedBlog = await api.get(`/api/blogs/${response.body.id}`)
+
+        assert.deepStrictEqual(addedBlog.body.likes, 0)
+      })
+
+      test('server responds with 400 Bad Request if `title`` is missing from request', async () => {
+        const newBlog = {
+          author: 'Tony Test',
+          url: 'https://tonytest.com/',
+          likes: 666
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(400)
+      })
+
+      test('server responds with 400 Bad Request if `url` is missing from request', async () => {
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'Tony Test',
+          likes: 666
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(400)
+      })
+
+      test('server responds with 401 Unauthorized if a token is missing', async () => {
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'Tony Test',
+          url: 'https://tonytest.com/'
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set('Authorization', 'Bearer ')
+          .expect(401)
+      })
     })
 
-    test('server responds with 400 Bad Request if `title`` is missing from request', async () => {
-      const newBlog = {
-        author: 'Tony Test',
-        url: 'https://tonytest.com/',
-        likes: 666
-      }
+    describe('when the user creates a blog', () => {
+      let createdBlog
+      beforeEach(async () => {
+        //Create a blog
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'root',
+          url: 'root',
+          likes: 666
+        }
 
-      await api.post('/api/blogs').send(newBlog).expect(400)
-    })
+        const response = await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set('Authorization', `Bearer ${token}`)
 
-    test('server responds with 400 Bad Request if `url` is missing from request', async () => {
-      const newBlog = {
-        title: 'Test Blog',
-        author: 'Tony Test',
-        likes: 666
-      }
+        createdBlog = response.body
+      })
 
-      await api.post('/api/blogs').send(newBlog).expect(400)
-    })
-  })
+      describe('deletion of blog', async () => {
+        test('deletes a blog', async () => {
+          await api
+            .delete(`/api/blogs/${createdBlog.id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(204)
 
-  describe('deletion of blog', async () => {
-    test('deletes a blog', async () => {
-      const blogToDelete = helper.initialBlogs[0]
-      await api.delete(`/api/blogs/${blogToDelete._id}`).expect(204)
+          const response = await api.get('/api/blogs')
+          const blogsAfterDelete = response.body
 
-      const response = await api.get('/api/blogs')
-      const blogsAfterDelete = response.body
+          assert.strictEqual(
+            blogsAfterDelete.length,
+            helper.initialBlogs.length
+          )
 
-      assert.strictEqual(
-        blogsAfterDelete.length,
-        helper.initialBlogs.length - 1
-      )
+          const IDs = blogsAfterDelete.map((blog) => blog.id)
+          assert(!IDs.includes(createdBlog.id))
+        })
+      })
 
-      const IDs = blogsAfterDelete.map((blog) => blog.id)
-      assert(!IDs.includes(blogToDelete._id))
-    })
-  })
+      describe('update blog', async () => {
+        test('updates a blog', async () => {
+          const updatedBlog = {
+            ...createdBlog,
+            title: 'updated title',
+            url: 'updated url'
+          }
 
-  describe('update blog', async () => {
-    test('updates a blog', async () => {
-      const blogToUpdate = helper.initialBlogs[0]
+          await api
+            .put(`/api/blogs/${createdBlog.id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(updatedBlog)
+            .expect(200)
 
-      const updatedBlog = {
-        ...blogToUpdate,
-        title: 'updated title',
-        url: 'updated url'
-      }
+          const response = await api.get(`/api/blogs/${createdBlog.id}`)
+          const blogAfterUpdate = response.body
 
-      await api
-        .put(`/api/blogs/${blogToUpdate._id}`)
-        .send(updatedBlog)
-        .expect(200)
-
-      const response = await api.get(`/api/blogs/${blogToUpdate._id}`)
-      const blogAfterUpdate = response.body
-
-      assert.deepStrictEqual(blogAfterUpdate.title, 'updated title')
-      assert.deepStrictEqual(blogAfterUpdate.url, 'updated url')
+          assert.deepStrictEqual(blogAfterUpdate.title, 'updated title')
+          assert.deepStrictEqual(blogAfterUpdate.url, 'updated url')
+        })
+      })
     })
   })
 })

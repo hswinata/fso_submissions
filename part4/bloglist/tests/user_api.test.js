@@ -1,12 +1,10 @@
 const { test, describe, after, beforeEach } = require('node:test')
 const User = require('../models/user')
-
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const bcryptjs = require('bcryptjs')
-
 const api = supertest(app)
 
 describe('when root user is initially saved', () => {
