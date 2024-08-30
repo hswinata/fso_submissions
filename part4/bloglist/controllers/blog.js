@@ -1,18 +1,5 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
-
-//Helper function.
-// const getToken = (request) => {
-//   const authorization = request.get('authorization')
-
-//   //Removes the word 'Bearer' and returns only the token.
-//   if (authorization && authorization.startsWith('Bearer ')) {
-//     return authorization.replace('Bearer ', '')
-//   }
-//   return null
-// }
 
 blogRouter.get('/', async (request, response, next) => {
   try {
@@ -38,8 +25,7 @@ blogRouter.get('/:id', async (request, response, next) => {
 blogRouter.post('/', async (request, response, next) => {
   try {
     //Find logged in user.
-    const userToken = jwt.verify(request.token, process.env.SECRET)
-    const user = await User.findById(userToken.id)
+    const user = request.user
 
     const blog = new Blog({ ...request.body, user: user.id })
     const newBlog = await blog.save()
@@ -57,8 +43,7 @@ blogRouter.post('/', async (request, response, next) => {
 blogRouter.delete('/:id', async (request, response, next) => {
   try {
     //Find logged in user.
-    const userToken = jwt.verify(request.token, process.env.SECRET)
-    const user = await User.findById(userToken.id)
+    const user = request.user
 
     const blog = await Blog.findById(request.params.id).populate('user', {
       name: 1,
@@ -71,9 +56,6 @@ blogRouter.delete('/:id', async (request, response, next) => {
       const error = new Error()
       error.name = 'ForbiddenUser'
       throw error
-      // return response.status(403).json({
-      //   error: `Only ${blog.user[0].username} is allowed to delete this blog.`
-      // })
     }
 
     const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
