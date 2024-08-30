@@ -36,7 +36,9 @@ userRouter.post('/', async (request, response, next) => {
 
     //Password validation
     if (password.length < 3)
-      return response.status(400).json({ error: 'password too short' })
+      return response
+        .status(400)
+        .json({ error: 'Password has to be three characters or more' })
 
     //Hashing password.
     const saltRounds = 10
