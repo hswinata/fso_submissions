@@ -18,13 +18,28 @@ userRouter.get('/', async (request, response, next) => {
 
 userRouter.get('/:id', async (request, response, next) => {
   try {
-    const users = await User.findById(request.params.id).populate('blogs', {
+    const user = await User.findById(request.params.id).populate('blogs', {
       url: 1,
       title: 1,
       author: 1,
       likes: 1
     })
-    response.json(users)
+    response.json(user)
+  } catch (error) {
+    next(error)
+  }
+})
+
+userRouter.get('/username/:username', async (request, response, next) => {
+  try {
+    const { username } = request.params
+    const user = await User.findOne({ username }).populate('blogs', {
+      url: 1,
+      title: 1,
+      author: 1,
+      likes: 1
+    })
+    response.json(user)
   } catch (error) {
     next(error)
   }

@@ -37,13 +37,8 @@ blogRouter.get('/:id', async (request, response, next) => {
 
 blogRouter.post('/', async (request, response, next) => {
   try {
-    //Token validation.
-    const userToken = jwt.verify(getToken(request), process.env.SECRET)
-    if (!userToken.id) {
-      return response.status(401).json({ error: 'invalid token' })
-    }
-
     //Find user in DB based on the token's userId.
+    const userToken = jwt.verify(getToken(request), process.env.SECRET)
     const user = await User.findById(userToken.id)
 
     const blog = new Blog({ ...request.body, user: user.id })
