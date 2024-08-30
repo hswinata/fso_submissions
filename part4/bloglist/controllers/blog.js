@@ -37,7 +37,7 @@ blogRouter.get('/:id', async (request, response, next) => {
 
 blogRouter.post('/', async (request, response, next) => {
   try {
-    //Find user in DB based on the token's userId.
+    //Find logged in user.
     const userToken = jwt.verify(request.token, process.env.SECRET)
     const user = await User.findById(userToken.id)
 
@@ -56,6 +56,26 @@ blogRouter.post('/', async (request, response, next) => {
 
 blogRouter.delete('/:id', async (request, response, next) => {
   try {
+    //Find logged in user.
+    const userToken = jwt.verify(request.token, process.env.SECRET)
+    const user = await User.findById(userToken.id)
+
+    const blog = await Blog.findById(request.params.id).populate('user', {
+      name: 1,
+      username: 1,
+      id: 1
+    })
+
+    //Return error if wrong logged in user tries to delete.
+    if (blog.user[0].id !== user.id) {
+      const error = new Error()
+      error.name = 'ForbiddenUser'
+      throw error
+      // return response.status(403).json({
+      //   error: `Only ${blog.user[0].username} is allowed to delete this blog.`
+      // })
+    }
+
     const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
     response.status(204).json(deletedBlog)
   } catch (error) {
