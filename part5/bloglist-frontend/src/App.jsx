@@ -17,11 +17,22 @@ const App = () => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
 
+  //useEffect to persist logged in user.
+  useEffect(() => {
+    const loggedinUser = window.localStorage.getItem('loggedinUser')
+    if (loggedinUser) {
+      const user = JSON.parse(loggedinUser)
+      setUser(user)
+    }
+  }, [])
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
       const loggedinUser = await loginService.login({ username, password })
+      window.localStorage.setItem('loggedinUser', JSON.stringify(loggedinUser))
+
       setUser(loggedinUser)
       setNotificationType('notification')
       setNotificationMessage(`${loggedinUser.name} has succesfully logged in`)
@@ -38,6 +49,12 @@ const App = () => {
         setNotificationMessage(null)
       }, 5000)
     }
+  }
+
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedinUser')
+    setUser(null)
+    setNotificationMessage(null)
   }
 
   //Helper functions.
@@ -57,6 +74,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <p>{user.name} is logged in</p>
+      <button onClick={handleLogout}>logout</button>
       {blogs
         .filter((blog) => blog.user[0].username === user.username)
         .map((blog) => (
