@@ -1,15 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import AddBlogForm from './components/AddBlogForm'
 import Notification from './components/Notification'
+import ToggleVisibility from './components/ToggleVisibility'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState('')
@@ -46,12 +45,13 @@ const App = () => {
     }
   }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  //Reference to AddBlogForm component.
+  const addBlogFormRef = useRef()
 
+  const handleLogin = async (loginData) => {
     try {
       //Token management.
-      const loggedinUser = await loginService.login({ username, password })
+      const loggedinUser = await loginService.login(loginData)
       window.localStorage.setItem('loggedinUser', JSON.stringify(loggedinUser))
       blogService.setToken(loggedinUser.token)
 
@@ -62,8 +62,6 @@ const App = () => {
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
-      setUsername('')
-      setPassword('')
     } catch (error) {
       console.error(error)
       setNotificationType('error')
@@ -84,15 +82,14 @@ const App = () => {
     }
   }
 
-  const handleAddBlog = async (event, id, newBlog) => {
-    event.preventDefault()
-
+  const handleAddBlog = async (id, newBlog) => {
     try {
       blogService.addBlog(newBlog)
       const newBlogObject = { id, ...newBlog }
       setBlogs((prevBlogs) => [...prevBlogs, newBlogObject])
       setNotificationType('notification')
       setNotificationMessage(`a new blog ${newBlog.title} has been added`)
+      addBlogFormRef.current.toggleVisibility()
     } catch (error) {
       console.error(error)
       setNotificationType('error')
@@ -106,22 +103,25 @@ const App = () => {
   //Helper functions.
   const loginForm = () => (
     <div>
-      <LoginForm
-        username={username}
-        password={password}
-        setUsername={setUsername}
-        setPassword={setPassword}
-        handleLogin={handleLogin}
-      />
+      <LoginForm handleLogin={handleLogin} />
     </div>
   )
 
   const blogList = () => (
     <div>
       <h2>blogs</h2>
-      <p>{user.name} is logged in</p>
-      <AddBlogForm handleAddBlog={handleAddBlog} />
-      <button onClick={handleLogout}>logout</button>
+      <div>
+        {user.name} is logged in
+        <button onClick={handleLogout}>logout</button>
+      </div>
+
+      <ToggleVisibility
+        buttonLabel="new blog"
+        setNotificationMessage={setNotificationMessage}
+        ref={addBlogFormRef}
+      >
+        <AddBlogForm handleAddBlog={handleAddBlog} />
+      </ToggleVisibility>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}

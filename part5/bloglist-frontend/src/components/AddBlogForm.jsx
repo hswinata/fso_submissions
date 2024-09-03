@@ -1,21 +1,26 @@
 import { useState } from 'react'
 
 const AddBlogForm = ({ handleAddBlog }) => {
-  const [formData, setFormData] = useState({ title: '', author: '', url: '' })
+  const [addFormData, setAddFormData] = useState({
+    title: '',
+    author: '',
+    url: ''
+  })
 
   const handleChange = ({ target }) => {
     const { name, value } = target
-    setFormData({ ...formData, [name]: value })
+    setAddFormData({ ...addFormData, [name]: value })
   }
 
   const handleSubmit = (event) => {
+    event.preventDefault()
     const tempId = Math.floor(100000 + Math.random() * 9000000)
-    handleAddBlog(event, tempId, formData)
-    setFormData({ title: '', author: '', url: '' })
+    handleAddBlog(tempId, addFormData)
+    setAddFormData({ title: '', author: '', url: '' })
   }
 
   return (
-    <>
+    <div>
       <h2>Create new blog</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -24,7 +29,7 @@ const AddBlogForm = ({ handleAddBlog }) => {
             onChange={handleChange}
             name="title"
             type="text"
-            value={formData.title}
+            value={addFormData.title}
           />
         </div>
         <div>
@@ -33,7 +38,7 @@ const AddBlogForm = ({ handleAddBlog }) => {
             onChange={handleChange}
             name="author"
             type="text"
-            value={formData.author}
+            value={addFormData.author}
           />
         </div>
         <div>
@@ -42,14 +47,14 @@ const AddBlogForm = ({ handleAddBlog }) => {
             onChange={handleChange}
             name="url"
             type="text"
-            value={formData.url}
+            value={addFormData.url}
           />
         </div>
         <div>
-          <button type="submit">Create</button>
+          <button type="submit">create</button>
         </div>
       </form>
-    </>
+    </div>
   )
 }
 
