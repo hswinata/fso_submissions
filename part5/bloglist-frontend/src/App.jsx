@@ -19,9 +19,9 @@ const App = () => {
       try {
         if (user) {
           const allBlogs = await blogService.getAll()
-          const filteredBlogs = allBlogs.filter(
-            (blog) => blog.user[0].username === user.username
-          )
+          const filteredBlogs = allBlogs
+            .filter((blog) => blog.user[0].username === user.username)
+            .sort((a, b) => b.likes - a.likes)
           setBlogs(filteredBlogs)
         }
       } catch (error) {
@@ -113,9 +113,11 @@ const App = () => {
 
       //Update state.
       setBlogs((prevBlogs) =>
-        prevBlogs.map((prevBlog) =>
-          prevBlog.id === updatedBlog.id ? updatedBlogObject : prevBlog
-        )
+        prevBlogs
+          .map((prevBlog) =>
+            prevBlog.id === updatedBlog.id ? updatedBlogObject : prevBlog
+          )
+          .sort((a, b) => b.likes - a.likes)
       )
       setNotificationType('notification')
       setNotificationMessage('thank you for the like!')
