@@ -83,15 +83,13 @@ const App = () => {
     }
   }
 
-  const handleAddBlog = async (id, newBlog) => {
+  const handleAddBlog = async (newBlog) => {
     try {
       addBlogFormRef.current.toggleVisibility()
-      await blogService.addBlog(newBlog)
+      const addedBlog = await blogService.addBlog(newBlog)
 
       //Update state.
-      const newBlogObject = { id, ...newBlog }
-      setBlogs((prevBlogs) => [...prevBlogs, newBlogObject])
-
+      setBlogs((prevBlogs) => [...prevBlogs, addedBlog])
       setNotificationType('notification')
       setNotificationMessage(`a new blog ${newBlog.title} has been added`)
       setTimeout(() => {

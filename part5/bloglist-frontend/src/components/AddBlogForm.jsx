@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const AddBlogForm = ({ handleAddBlog }) => {
   const [addFormData, setAddFormData] = useState({
@@ -14,9 +15,12 @@ const AddBlogForm = ({ handleAddBlog }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    const tempId = Math.floor(100000 + Math.random() * 9000000)
-    handleAddBlog(tempId, addFormData)
+    handleAddBlog(addFormData)
     setAddFormData({ title: '', author: '', url: '' })
+  }
+
+  AddBlogForm.propTypes = {
+    handleAddBlog: PropTypes.func.isRequired
   }
 
   return (
