@@ -79,10 +79,11 @@ blogRouter.put(
   middleware.userExtractor,
   async (request, response, next) => {
     try {
+      const { title, author, url, likes } = request.body
       const user = request.user
       const updatedBlog = await Blog.findByIdAndUpdate(
         request.params.id,
-        request.body,
+        { title, author, url, likes },
         {
           new: true
         }
