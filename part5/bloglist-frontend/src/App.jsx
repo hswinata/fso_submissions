@@ -134,6 +134,29 @@ const App = () => {
     }
   }
 
+  const handleDeleteBlog = async (deletedBlogId) => {
+    try {
+      await blogService.deleteBlog(deletedBlogId)
+
+      //Update state.
+      setBlogs((prevBlogs) =>
+        prevBlogs.filter((prevBlog) => prevBlog.id !== deletedBlogId)
+      )
+      setNotificationType('notification')
+      setNotificationMessage(`Blog ${deletedBlogId} has been deleted`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } catch (error) {
+      console.error(error)
+      setNotificationType('error')
+      setNotificationMessage('failed to delete blog')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
+  }
+
   //Helper functions.
   const loginForm = () => (
     <div>
@@ -157,7 +180,12 @@ const App = () => {
         <AddBlogForm handleAddBlog={handleAddBlog} />
       </ToggleVisibility>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} handleLikeClick={handleLikeClick} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleLikeClick={handleLikeClick}
+          handleDeleteBlog={handleDeleteBlog}
+        />
       ))}
     </div>
   )

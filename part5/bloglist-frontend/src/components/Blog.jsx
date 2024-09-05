@@ -1,7 +1,7 @@
 import BlogDetail from './BlogDetail'
 import { useState } from 'react'
 
-const Blog = ({ blog, handleLikeClick }) => {
+const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -11,11 +11,15 @@ const Blog = ({ blog, handleLikeClick }) => {
   }
 
   const [detailVisible, setDetailVisible] = useState(false)
-
   const hideWhenDetailVisible = { display: detailVisible ? 'none' : '' }
   const showWhenDetailVisible = { display: detailVisible ? '' : 'none' }
 
   const toggleDetailVisibility = () => setDetailVisible(!detailVisible)
+
+  const handleDelete = () => {
+    if (window.confirm(`Remove the blog '${blog.title}' by ${blog.author}?`))
+      handleDeleteBlog(blog.id)
+  }
 
   return (
     <div style={blogStyle}>
@@ -27,6 +31,7 @@ const Blog = ({ blog, handleLikeClick }) => {
       </div>
       <div style={showWhenDetailVisible}>
         <BlogDetail blog={blog} handleLikeClick={handleLikeClick} />
+        <button onClick={handleDelete}>remove</button>
       </div>
     </div>
   )
