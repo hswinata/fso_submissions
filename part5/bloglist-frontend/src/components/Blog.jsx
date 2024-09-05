@@ -1,5 +1,6 @@
 import BlogDetail from './BlogDetail'
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
   const blogStyle = {
@@ -19,6 +20,12 @@ const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
   const handleDelete = () => {
     if (window.confirm(`Remove the blog '${blog.title}' by ${blog.author}?`))
       handleDeleteBlog(blog.id)
+  }
+
+  Blog.propTypes = {
+    blog: PropTypes.object.isRequired,
+    handleLikeClick: PropTypes.func.isRequired,
+    handleDeleteBlog: PropTypes.func.isRequired
   }
 
   return (
