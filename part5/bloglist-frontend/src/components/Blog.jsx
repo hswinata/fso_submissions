@@ -1,7 +1,7 @@
 import BlogDetail from './BlogDetail'
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLikeClick }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -26,7 +26,7 @@ const Blog = ({ blog }) => {
         </button>
       </div>
       <div style={showWhenDetailVisible}>
-        <BlogDetail blog={blog} />
+        <BlogDetail blog={blog} handleLikeClick={handleLikeClick} />
       </div>
     </div>
   )

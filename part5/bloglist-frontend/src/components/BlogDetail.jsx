@@ -1,12 +1,19 @@
-const BlogDetail = ({ blog }) => (
-  <div>
-    <div>url: {blog.url}</div>
+const BlogDetail = ({ blog, handleLikeClick }) => {
+  const handleClick = () => {
+    const newBlog = { ...blog, likes: blog.likes + 1 }
+    handleLikeClick(newBlog)
+  }
+
+  return (
     <div>
-      likes: {blog.likes}
-      <button>like</button>
+      <div>url: {blog.url}</div>
+      <div>
+        likes: {blog.likes}
+        <button onClick={handleClick}>like</button>
+      </div>
+      <div>{blog.author}</div>
     </div>
-    <div>{blog.author}</div>
-  </div>
-)
+  )
+}
 
 export default BlogDetail
