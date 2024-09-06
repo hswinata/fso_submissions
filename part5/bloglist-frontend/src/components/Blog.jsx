@@ -23,14 +23,14 @@ const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
   }
 
   return (
-    <div style={blogStyle} className="blog">
+    <div style={blogStyle} data-testid="blog">
       <div>
         {blog.title} by {blog.author}
         <button onClick={toggleDetailVisibility}>
           {detailVisible ? 'hide' : 'show'}
         </button>
       </div>
-      <div style={showWhenDetailVisible}>
+      <div style={showWhenDetailVisible} data-testid="blog-detail">
         <BlogDetail blog={blog} handleLikeClick={handleLikeClick} />
         <button onClick={handleDelete}>remove</button>
       </div>
