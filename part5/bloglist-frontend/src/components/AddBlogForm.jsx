@@ -20,7 +20,7 @@ const AddBlogForm = ({ handleAddBlog }) => {
   }
 
   return (
-    <div>
+    <div data-testid="addForm">
       <h2>Create new blog</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -30,6 +30,7 @@ const AddBlogForm = ({ handleAddBlog }) => {
             name="title"
             type="text"
             value={addFormData.title}
+            data-testid="title-input"
           />
         </div>
         <div>
@@ -39,6 +40,7 @@ const AddBlogForm = ({ handleAddBlog }) => {
             name="author"
             type="text"
             value={addFormData.author}
+            data-testid="author-input"
           />
         </div>
         <div>
@@ -48,6 +50,7 @@ const AddBlogForm = ({ handleAddBlog }) => {
             name="url"
             type="text"
             value={addFormData.url}
+            data-testid="url-input"
           />
         </div>
         <div>
