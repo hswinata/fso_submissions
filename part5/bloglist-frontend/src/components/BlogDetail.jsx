@@ -6,11 +6,6 @@ const BlogDetail = ({ blog, handleLikeClick }) => {
     handleLikeClick(newBlog)
   }
 
-  BlogDetail.propTypes = {
-    blog: PropTypes.object.isRequired,
-    handleLikeClick: PropTypes.func.isRequired
-  }
-
   return (
     <div>
       <div>url: {blog.url}</div>
@@ -21,6 +16,11 @@ const BlogDetail = ({ blog, handleLikeClick }) => {
       <div>{blog.author}</div>
     </div>
   )
+}
+
+BlogDetail.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleLikeClick: PropTypes.func.isRequired
 }
 
 export default BlogDetail

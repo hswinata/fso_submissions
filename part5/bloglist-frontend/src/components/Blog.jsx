@@ -22,14 +22,8 @@ const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
       handleDeleteBlog(blog.id)
   }
 
-  Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-    handleLikeClick: PropTypes.func.isRequired,
-    handleDeleteBlog: PropTypes.func.isRequired
-  }
-
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <div>
         {blog.title} by {blog.author}
         <button onClick={toggleDetailVisibility}>
@@ -42,6 +36,12 @@ const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
       </div>
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleLikeClick: PropTypes.func.isRequired,
+  handleDeleteBlog: PropTypes.func.isRequired
 }
 
 export default Blog

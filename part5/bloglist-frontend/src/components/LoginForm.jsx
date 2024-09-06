@@ -18,10 +18,6 @@ const LoginForm = ({ handleLogin }) => {
     setLoginFormData({ username: '', password: '' })
   }
 
-  LoginForm.propTypes = {
-    handleLogin: PropTypes.func.isRequired
-  }
-
   return (
     <div>
       <h2>log in to application</h2>
@@ -50,6 +46,10 @@ const LoginForm = ({ handleLogin }) => {
       </form>
     </div>
   )
+}
+
+LoginForm.propTypes = {
+  handleLogin: PropTypes.func.isRequired
 }
 
 export default LoginForm

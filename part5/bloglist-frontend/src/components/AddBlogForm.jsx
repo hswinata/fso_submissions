@@ -19,10 +19,6 @@ const AddBlogForm = ({ handleAddBlog }) => {
     setAddFormData({ title: '', author: '', url: '' })
   }
 
-  AddBlogForm.propTypes = {
-    handleAddBlog: PropTypes.func.isRequired
-  }
-
   return (
     <div>
       <h2>Create new blog</h2>
@@ -60,6 +56,10 @@ const AddBlogForm = ({ handleAddBlog }) => {
       </form>
     </div>
   )
+}
+
+AddBlogForm.propTypes = {
+  handleAddBlog: PropTypes.func.isRequired
 }
 
 export default AddBlogForm
