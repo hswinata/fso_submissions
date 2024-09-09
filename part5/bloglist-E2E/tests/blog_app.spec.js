@@ -33,20 +33,42 @@ describe("Blog app", () => {
       await page.getByTestId("username-input").fill("testuser");
       await page.getByTestId("password-input").fill("testuser");
       await page.getByRole("button", { name: "login" }).click();
-
-      await expect(
-        page.getByText("testuser has succesfully logged in")
-      ).toBeVisible();
+      const notifDiv = await page.locator(".notification");
+      await expect(notifDiv).toContainText(
+        "testuser has succesfully logged in"
+      );
     });
 
     test("Login fails with wrong credentials", async ({ page }) => {
       await page.getByTestId("username-input").fill("wrong user");
       await page.getByTestId("password-input").fill("wrong password");
       await page.getByRole("button", { name: "login" }).click();
+      const errorDiv = await page.locator(".error");
+      await expect(errorDiv).toContainText("invalid username or password");
+    });
+  });
 
-      await expect(
-        page.getByText("invalid username or password")
-      ).toBeVisible();
+  describe("When user is logged in", () => {
+    beforeEach(async ({ page }) => {
+      await page.getByTestId("username-input").fill("testuser");
+      await page.getByTestId("password-input").fill("testuser");
+      await page.getByRole("button", { name: "login" }).click();
+    });
+
+    test("User can create a blog", async ({ page }) => {
+      await page.getByRole("button", { name: "new blog" }).click();
+      await page.getByTestId("title-input").fill("test title");
+      await page.getByTestId("author-input").fill("test author");
+      await page.getByTestId("url-input").fill("test url");
+      await page.getByRole("button", { name: "create" }).click();
+      
+      const notifDiv = await page.locator(".notification");
+      await expect(notifDiv).toContainText(
+        "a new blog test title has been added"
+      );
+
+      const newBlog = await page.getByText("test title by test author");
+      await expect(newBlog).toBeVisible();
     });
   });
 });
