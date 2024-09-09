@@ -1,26 +1,22 @@
 const Notification = ({ notificationMessage, notificationType }) => {
   if (notificationMessage === null) return null
 
-  const greenStyle = {
-    color: 'green',
+  const notificationStyle = {
+    color: notificationType === 'notification' ? 'green' : ' red',
     fontSize: 24,
-    border: '3px solid green',
+    border: `3px solid ${notificationType === 'notification' ? 'green' : 'red'}`,
     padding: '5px',
     marginBottom: '5px'
   }
 
-  const errorStyle = {
-    color: 'red',
-    fontSize: 24,
-    border: '3px solid red',
-    padding: '5px',
-    marginBottom: '5px'
-  }
-
-  const notificationStyle = () =>
-    notificationType === 'notification' ? greenStyle : errorStyle
-
-  return <div style={notificationStyle()}>{notificationMessage}</div>
+  return (
+    <div
+      className={notificationType === 'notification' ? 'notification' : 'error'}
+      style={notificationStyle}
+    >
+      {notificationMessage}
+    </div>
+  )
 }
 
 export default Notification
