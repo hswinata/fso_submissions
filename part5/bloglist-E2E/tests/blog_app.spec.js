@@ -6,7 +6,7 @@ describe('Blog app', () => {
     // Empty the test database.
     await request.post('/api/testing/reset')
 
-    //Add a new user.
+    // Add a new user.
     await request.post('/api/users', {
       data: {
         name: 'testuser',
@@ -63,16 +63,26 @@ describe('Blog app', () => {
     describe('When a user has created one blog', () => {
       beforeEach(async ({ page }) => {
         await createBlog(page, 'test title', 'test author', 'test url')
+        await page.getByRole('button', { name: 'show' }).click()
+        await page.getByRole('button', { name: 'like' }).click()
       })
 
       test('User can like a blog', async ({ page }) => {
-        await expect(page.getByText('test title by test author')).toBeVisible()
-
-        await page.getByRole('button', { name: 'show' }).click()
-        await page.getByRole('button', { name: 'like' }).click()
-
         const like = await page.getByText('likes: 1')
         await expect(like).toBeVisible()
+      })
+
+      test('User can delete the blog', async ({ page }) => {
+        await page.getByRole('button', { name: 'remove' }).click()
+
+        await page.on('dialog', async (dialog) => {
+          await dialog.accept()
+        })
+
+        await expect(page.getByText('Blog has been deleted')).toBeVisible()
+        await expect(
+          page.getByText('test title by test author')
+        ).not.toBeVisible()
       })
     })
   })
