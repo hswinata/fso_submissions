@@ -13,22 +13,20 @@ const App = () => {
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState('')
 
-  //Get filteredBlogs by user.
+  //Get blogs and sort it by likes.
   useEffect(() => {
-    const getFilteredBlogs = async () => {
+    const getSortedBlogs = async () => {
       try {
         if (user) {
           const allBlogs = await blogService.getAll()
-          const filteredBlogs = allBlogs
-            .filter((blog) => blog.user[0].username === user.username)
-            .sort((a, b) => b.likes - a.likes)
-          setBlogs(filteredBlogs)
+          const sortedBlogs = allBlogs.sort((a, b) => b.likes - a.likes)
+          setBlogs(sortedBlogs)
         }
       } catch (error) {
         console.error(error)
       }
     }
-    getFilteredBlogs()
+    getSortedBlogs()
   }, [user])
 
   //Persist logged in user when page reloads.
@@ -148,7 +146,7 @@ const App = () => {
     } catch (error) {
       console.error(error)
       setNotificationType('error')
-      setNotificationMessage('failed to delete blog')
+      setNotificationMessage(error.response.data.error)
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
@@ -179,6 +177,7 @@ const App = () => {
       </ToggleVisibility>
       {blogs.map((blog) => (
         <Blog
+          user={user}
           key={blog.id}
           blog={blog}
           handleLikeClick={handleLikeClick}

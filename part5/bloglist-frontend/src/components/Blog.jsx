@@ -2,7 +2,7 @@ import BlogDetail from './BlogDetail'
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
+const Blog = ({ user, blog, handleLikeClick, handleDeleteBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -32,7 +32,9 @@ const Blog = ({ blog, handleLikeClick, handleDeleteBlog }) => {
       </div>
       <div style={showWhenDetailVisible} data-testid="blog-detail">
         <BlogDetail blog={blog} handleLikeClick={handleLikeClick} />
-        <button onClick={handleDelete}>remove</button>
+        {user.username === blog.user[0].username && (
+          <button onClick={handleDelete}>remove</button>
+        )}
       </div>
     </div>
   )
