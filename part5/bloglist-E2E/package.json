@@ -6,13 +6,18 @@
   "scripts": {
     "test": "playwright test",
     "test:report": "playwright show-report",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
     "@playwright/test": "^1.47.0",
-    "@types/node": "^22.5.4"
+    "@stylistic/eslint-plugin-js": "^2.8.0",
+    "@types/node": "^22.5.4",
+    "eslint": "^9.10.0",
+    "prettier": "^3.3.3"
   }
 }
