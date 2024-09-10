@@ -64,7 +64,8 @@ module.exports = defineConfig({
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
-  ]
+  ],
+  testIgnore: ['**/helpers/*']
 
   /* Run your local dev server before starting the tests */
   // webServer: {

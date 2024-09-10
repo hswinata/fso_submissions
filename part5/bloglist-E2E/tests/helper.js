@@ -1,7 +1,11 @@
+const clickButton = async (element, buttonName) => {
+  await element.getByRole('button', { name: buttonName }).click()
+}
+
 const login = async (page, username, password) => {
   await page.getByTestId('username-input').fill(username)
   await page.getByTestId('password-input').fill(password)
-  await page.getByRole('button', { name: 'login' }).click()
+  await clickButton(page, 'login')
 }
 
 const createBlog = async (page, title, author, url) => {
@@ -9,7 +13,7 @@ const createBlog = async (page, title, author, url) => {
   await page.getByTestId('title-input').fill(title)
   await page.getByTestId('author-input').fill(author)
   await page.getByTestId('url-input').fill(url)
-  await page.getByRole('button', { name: 'create' }).click()
+  await clickButton(page, 'create')
 }
 
-export { login, createBlog }
+export { login, createBlog, clickButton }
