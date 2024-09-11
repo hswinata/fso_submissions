@@ -23,14 +23,24 @@ const Blog = ({ user, blog, handleLikeClick, handleDeleteBlog }) => {
   }
 
   return (
-    <div style={blogStyle} data-testid="blog">
-      <div>
-        {blog.title} by {blog.author}
-        <button onClick={toggleDetailVisibility}>
+    <div
+      style={blogStyle}
+      className="blog-container"
+      data-testid="blog-container"
+    >
+      <div className="blog-header">
+        <div className="blog-title">
+          {blog.title} by {blog.author}
+        </div>
+        <button className="toggle-button" onClick={toggleDetailVisibility}>
           {detailVisible ? 'hide' : 'show'}
         </button>
       </div>
-      <div style={showWhenDetailVisible} data-testid="blog-detail">
+      <div
+        className="blog-detail"
+        style={showWhenDetailVisible}
+        data-testid="blog-detail"
+      >
         <BlogDetail blog={blog} handleLikeClick={handleLikeClick} />
         {user.username === blog.user[0].username && (
           <button onClick={handleDelete}>remove</button>
