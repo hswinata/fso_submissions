@@ -175,15 +175,17 @@ const App = () => {
       >
         <AddBlogForm handleAddBlog={handleAddBlog} />
       </ToggleVisibility>
-      {blogs.map((blog) => (
-        <Blog
-          user={user}
-          key={blog.id}
-          blog={blog}
-          handleLikeClick={handleLikeClick}
-          handleDeleteBlog={handleDeleteBlog}
-        />
-      ))}
+      <div className="blog-list-container">
+        {blogs.map((blog) => (
+          <Blog
+            user={user}
+            key={blog.id}
+            blog={blog}
+            handleLikeClick={handleLikeClick}
+            handleDeleteBlog={handleDeleteBlog}
+          />
+        ))}
+      </div>
     </div>
   )
 
