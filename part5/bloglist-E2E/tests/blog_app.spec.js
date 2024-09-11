@@ -105,10 +105,10 @@ describe('Blog app', () => {
       test('Only the user who created the blog can delete it', async ({
         page
       }) => {
-        //user2 selects the blog they create and clicks show.
+        //user2 selects the blog they created and clicks show.
         const secondBlogElement = await page
-          .getByText('test title2 by test author2')
-          .locator('..')
+          .locator('.blog-list-container > .blog-container')
+          .nth(1)
         await clickButton(secondBlogElement, 'show')
 
         // Set up the dialog handler before clicking "remove"
@@ -123,6 +123,65 @@ describe('Blog app', () => {
         await expect(
           page.getByText('test title2 by test author2')
         ).not.toBeVisible()
+      })
+    })
+
+    describe('When there are multiple blogs', () => {
+      let blogsContainer
+      beforeEach(async ({ page }) => {
+        //User creates 3 blogs
+        await createBlog(page, 'test title1', 'test author1', 'test url1')
+        await createBlog(page, 'test title2', 'test author2', 'test url2')
+        await createBlog(page, 'test title3', 'test author3', 'test url3')
+
+        //Check that the order is correct.
+        blogsContainer = await page.locator('.blog-list-container')
+        const allBlogContents = await blogsContainer
+          .locator('.blog-container .blog-title')
+          .allTextContents()
+
+        const expectedOrder = [
+          'test title1 by test author1',
+          'test title2 by test author2',
+          'test title3 by test author3'
+        ]
+        await expect(allBlogContents).toStrictEqual(expectedOrder)
+      })
+
+      test('Blogs are sorted in descending order by likes', async ({
+        page
+      }) => {
+        //User likes second blog twice.
+        const secondBlogElement = await blogsContainer
+          .getByText('test title2 by test author2')
+          .locator('../..')
+
+        await clickButton(secondBlogElement, 'show')
+        await clickButton(secondBlogElement, 'like')
+        await page.waitForTimeout(1000)
+        await clickButton(secondBlogElement, 'like')
+        await expect(secondBlogElement.getByText('likes: 2')).toBeVisible()
+
+        // User likes third blog once.
+        const thirdBlogElement = await blogsContainer
+          .getByText('test title3 by test author3')
+          .locator('../..')
+        await clickButton(thirdBlogElement, 'show')
+        await clickButton(thirdBlogElement, 'like')
+        await expect(thirdBlogElement.getByText('Likes: 1')).toBeVisible()
+
+        //Check that the order is correct.
+        const allBlogContents = await blogsContainer
+          .locator('.blog-container .blog-title')
+          .allTextContents()
+
+        const expectedOrder = [
+          'test title2 by test author2',
+          'test title3 by test author3',
+          'test title1 by test author1'
+        ]
+
+        await expect(allBlogContents).toStrictEqual(expectedOrder)
       })
     })
   })
