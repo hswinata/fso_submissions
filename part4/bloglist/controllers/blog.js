@@ -31,14 +31,22 @@ blogRouter.post(
       //Find logged in user.
       const user = request.user
 
-      const blog = new Blog({ ...request.body, user: user.id })
+      const blog = new Blog({
+        ...request.body,
+        user: user.id
+      })
+
       const newBlog = await blog.save()
 
       //Add blog to user collection.
       user.blogs = user.blogs.concat(newBlog._id)
-      await user.save()
 
-      response.status(201).json(newBlog)
+      const returnedBlog = await Blog.findById(newBlog._id).populate('user', {
+        name: 1,
+        username: 1
+      })
+
+      response.status(201).json(returnedBlog)
     } catch (error) {
       next(error)
     }
