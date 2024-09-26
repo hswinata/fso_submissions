@@ -24,12 +24,16 @@ Anecdote.propTypes = {
 }
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector((state) => state)
   const dispatch = useDispatch()
+
+  const anecdotes = useSelector(({ filter, anecdotes }) =>
+    anecdotes.filter((anecdote) => {
+      return anecdote.content.includes(filter)
+    })
+  )
 
   return (
     <div>
-      <h2>Anecdotes</h2>
       {anecdotes.map((anecdote) => (
         <Anecdote
           key={anecdote.id}
