@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
+import { createNotification } from '../reducers/noficationReducer'
 import PropTypes from 'prop-types'
 
 const Anecdote = ({ anecdote, handleClick }) => {
@@ -14,23 +15,18 @@ const Anecdote = ({ anecdote, handleClick }) => {
   )
 }
 
-Anecdote.propTypes = {
-  anecdote: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    votes: PropTypes.number.isRequired
-  }).isRequired,
-  handleClick: PropTypes.func.isRequired
-}
-
 const AnecdoteList = () => {
   const dispatch = useDispatch()
-
   const anecdotes = useSelector(({ filter, anecdotes }) =>
     anecdotes.filter((anecdote) => {
       return anecdote.content.includes(filter)
     })
   )
+
+  const handleVoteClick = (anecdote) => {
+    dispatch(voteAnecdote(anecdote.id))
+    dispatch(createNotification(`You voted for '${anecdote.content}'.`))
+  }
 
   return (
     <div>
@@ -38,11 +34,20 @@ const AnecdoteList = () => {
         <Anecdote
           key={anecdote.id}
           anecdote={anecdote}
-          handleClick={() => dispatch(voteAnecdote(anecdote.id))}
+          handleClick={() => handleVoteClick(anecdote)}
         />
       ))}
     </div>
   )
+}
+
+Anecdote.propTypes = {
+  anecdote: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    votes: PropTypes.number.isRequired
+  }).isRequired,
+  handleClick: PropTypes.func.isRequired
 }
 
 export default AnecdoteList
