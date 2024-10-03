@@ -14,6 +14,7 @@ const App = () => {
       .getAll()
       .then((anecdotes) => dispatch(setAnecdotes(anecdotes)))
   }, [])
+
   return (
     <div>
       <h2>Anecdotes</h2>
