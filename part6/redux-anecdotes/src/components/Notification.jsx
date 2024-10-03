@@ -1,8 +1,6 @@
-import { useSelector, useDispatch } from 'react-redux'
-import { removeNotification } from '../reducers/noficationReducer'
+import { useSelector } from 'react-redux'
 
 const Notification = () => {
-  const dispatch = useDispatch()
   const style = {
     border: 'solid',
     padding: 10,
@@ -12,10 +10,6 @@ const Notification = () => {
   const notification = useSelector((state) => {
     return state.notification
   })
-
-  setTimeout(() => {
-    dispatch(removeNotification())
-  }, 5000)
 
   return notification && <div style={style}>{notification}</div>
 }
