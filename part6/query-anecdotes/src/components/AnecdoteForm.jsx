@@ -1,17 +1,16 @@
-const AnecdoteForm = () => {
-
+const AnecdoteForm = ({ createAnecdoteMutation }) => {
   const onCreate = (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
-    console.log('new anecdote')
-}
+    createAnecdoteMutation.mutate(content)
+  }
 
   return (
     <div>
       <h3>create new</h3>
       <form onSubmit={onCreate}>
-        <input name='anecdote' />
+        <input name="anecdote" />
         <button type="submit">create</button>
       </form>
     </div>
