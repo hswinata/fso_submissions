@@ -15,6 +15,19 @@ const App = () => {
     }
   })
 
+  const voteAnecdoteMutation = useMutation({
+    mutationFn: ({ id, anecdote }) => anecdotesService.vote(id, anecdote),
+    onSuccess: (updatedAnecdote) => {
+      const anecdotes = queryClient.getQueryData(['anecdotes'])
+      queryClient.setQueryData(
+        ['anecdotes'],
+        anecdotes.map((anecdote) =>
+          anecdote.id !== updatedAnecdote.id ? anecdote : updatedAnecdote
+        )
+      )
+    }
+  })
+
   //Query.
   const result = useQuery({
     queryKey: ['anecdotes'],
@@ -32,9 +45,10 @@ const App = () => {
 
   const anecdotes = result.data
 
-  //Helper functions:
+  //Handler functions:
   const handleVote = (anecdote) => {
-    console.log('vote')
+    const id = anecdote.id
+    voteAnecdoteMutation.mutate({ id, anecdote })
   }
 
   return (
