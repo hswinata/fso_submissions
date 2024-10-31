@@ -5,6 +5,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from './NotificationContext'
 
 const App = () => {
+  //Context:
+  const dispatch = useNotificationDispatch()
+
   //Mutations:
   const queryClient = useQueryClient()
 
@@ -13,6 +16,10 @@ const App = () => {
     onSuccess: (newAnecdote) => {
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
+    },
+    onError: (error) => {
+      const errorMessage = error.response.data.error
+      dispatch(errorMessage, 5000)
     }
   })
 
@@ -28,9 +35,6 @@ const App = () => {
       )
     }
   })
-
-  //Context:
-  const dispatch = useNotificationDispatch()
 
   //Handler functions:
   const handleVote = (anecdote) => {
